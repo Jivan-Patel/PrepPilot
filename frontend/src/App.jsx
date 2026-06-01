@@ -10,6 +10,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "./components/animations/PageTransition";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 import Login from "./pages/Auth/Login";
 import SignUp from "./pages/Auth/SignUp";
@@ -42,11 +43,16 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+const BuggyComponent = () => {
+  throw new Error("This is a simulated crash to test the Error Boundary component!");
+};
+
 const App = () => {
   return (
     <ThemeProvider>
       <UserProvider>
-        <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text-dark)] transition-colors duration-300">
+        <ErrorBoundary>
+          <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text-dark)] transition-colors duration-300">
           <Router>
             <AnimatePresence mode="wait">
               <Routes>
@@ -90,6 +96,10 @@ const App = () => {
                       <InterviewPrep />
                     </PageTransition>
                   }
+                />
+                <Route
+                  path="/test-error"
+                  element={<BuggyComponent />}
                 />
                 <Route
                   path="/resume-builder/:id"
@@ -282,7 +292,8 @@ const App = () => {
               },
             }}
           />
-        </div>
+          </div>
+        </ErrorBoundary>
       </UserProvider>
     </ThemeProvider>
   );
