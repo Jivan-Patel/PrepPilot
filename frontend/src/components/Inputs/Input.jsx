@@ -33,16 +33,19 @@ const Input = ({ value, onChange, label, placeholder, type, autoFocus = false, }
           autoFocus={autoFocus}
         />
         {type === "password" && (
-          <span
-            className="absolute right-3 cursor-pointer select-none text-gray-400 hover:text-gray-300 transition-colors"
-            onClick={toggleShowPassword}
-          >
-            {showPassword ? (
-              <FaRegEye size={18} />
-            ) : (
-              <FaRegEyeSlash size={18} />
-            )}
-          </span>
+          <button
+  type="button"
+  onClick={toggleShowPassword}
+  aria-label={showPassword ? "Hide password" : "Show password"}
+  aria-pressed={showPassword}
+  className="absolute right-3 text-gray-400 hover:text-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500 rounded"
+>
+  {showPassword ? (
+    <FaRegEye size={18} />
+  ) : (
+    <FaRegEyeSlash size={18} />
+  )}
+</button>
         )}
       </div>
     </div>
