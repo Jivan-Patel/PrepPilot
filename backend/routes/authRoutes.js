@@ -23,7 +23,7 @@ router.get("/verify-email", verifyEmail);
  * Upload a user profile image.
  * @route POST /api/auth/upload-image
  */
-router.post("/upload-image", generalLimiter, upload.single("image"), (req, res) => {
+router.post("/upload-image", protect, generalLimiter, upload.single("image"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
   }

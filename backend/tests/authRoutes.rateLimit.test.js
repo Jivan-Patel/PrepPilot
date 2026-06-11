@@ -84,10 +84,12 @@ test("DELETE /delete-account includes protect and sensitiveAuthLimiter in order"
   assert.ok(stack.indexOf(sensitiveAuthLimiter) < stack.indexOf(deleteUserAccount));
 });
 
-test("POST /upload-image includes generalLimiter before the upload handler", () => {
+test("POST /upload-image includes protect and generalLimiter before the upload handler", () => {
   const stack = getRouteStack("POST", "/upload-image");
 
   assert.ok(stack);
+  assert.equal(stack.includes(protect), true);
   assert.equal(stack.includes(generalLimiter), true);
+  assert.ok(stack.indexOf(protect) < stack.indexOf(generalLimiter));
   assert.ok(stack.indexOf(generalLimiter) < stack.length - 1);
 });
