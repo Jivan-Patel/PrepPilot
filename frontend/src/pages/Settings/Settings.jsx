@@ -98,6 +98,7 @@ const Settings = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   // Modals
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
   // Populate user data
   useEffect(() => {
     if (user) {
@@ -362,7 +363,6 @@ const Settings = () => {
     const deleteToast = toast.loading("Deleting account...");
     try {
       await axiosInstance.delete(API_PATHS.AUTH.DELETE_ACCOUNT);
-
       toast.success("Account deleted permanently. Goodbye!", {
         id: deleteToast,
       });
@@ -378,9 +378,10 @@ const Settings = () => {
       });
     } finally {
       setShowDeleteConfirm(false);
+      setDeleteConfirmationText("");
     }
   };
-  
+
   const Requirement = ({ valid, text }) => (
     <li className="flex items-center gap-2">
       {valid ? (
@@ -464,7 +465,6 @@ const Settings = () => {
           </button>
         </nav>
       </div>
-
       {/* Mobile & Tablet Navigation */}
       <div className="block lg:hidden border-b border-slate-800 p-4">
         <nav className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -519,7 +519,6 @@ const Settings = () => {
           ))}
         </nav>
       </div>
-
       {/* Main Settings Content Area */}
       <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 max-w-5xl w-full">
         {/* ================= BASIC INFO SECTION ================= */}
@@ -1415,35 +1414,58 @@ const Settings = () => {
       </div>
       {/* ================= DELETE CONFIRMATION MODAL ================= */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-          <div className="bg-white dark:bg-[#0f172a] rounded-xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl p-6 animate-scaleIn">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-              Delete Account?
-            </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-6 max-w-md w-full">
+            <h3 className="text-lg font-bold mb-4">Delete Account</h3>
+
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
               Are you sure you want to delete your account? This action is
               permanent and cannot be undone. All your session data, progress
               tracker, and profile configurations will be deleted forever.
             </p>
 
-            <div className="flex justify-end gap-3 mt-6">
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">
+                Type DELETE to confirm
+              </label>
+
+              <input
+                type="text"
+                value={deleteConfirmationText}
+                onChange={(e) => setDeleteConfirmationText(e.target.value)}
+                placeholder="DELETE"
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg py-2 px-3 text-sm"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3">
               <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold py-2 px-4 rounded-lg text-xs transition-colors cursor-pointer"
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setDeleteConfirmationText("");
+                }}
+                className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 px-4 py-2 rounded-lg"
               >
                 Cancel
               </button>
+
               <button
                 onClick={handleDeleteAccount}
-                className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg text-xs transition-colors cursor-pointer"
+                disabled={deleteConfirmationText !== "DELETE"}
+                className={`px-4 py-2 rounded-lg text-white ${
+                  deleteConfirmationText === "DELETE"
+                    ? "bg-red-600 hover:bg-red-700"
+                    : "bg-red-300 cursor-not-allowed"
+                }`}
               >
                 Permanently Delete
               </button>
             </div>
           </div>
         </div>
-      )}
+      )}{" "}
     </div>
   );
 };
+
 export default Settings;
