@@ -25,6 +25,7 @@ import {
   BookOpen,
   BookMarked,
   CalendarDays,
+  ScrollText,
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -313,6 +314,20 @@ const Sidebar = () => {
         >
           <Settings size={18} />
           Settings
+        </button>
+        <button
+          onClick={() => {
+            navigate("/terms-and-conditions");
+            setMobileMenuOpen(false);
+          }}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+            location.pathname.startsWith("/terms-and-conditions")
+              ? "bg-violet-600/10 text-violet-400 font-semibold"
+              : "text-gray-400 hover:bg-white/5 hover:text-white"
+          }`}
+        >
+          <ScrollText size={18} />
+          Policy
         </button>
         <button 
           onClick={() => navigate("/support")}

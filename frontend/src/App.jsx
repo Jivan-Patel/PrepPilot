@@ -28,6 +28,7 @@ import ResumeTemplates from "./pages/ResumeBuilder/ResumeTemplates";
 import ResumeEditor from "./pages/ResumeBuilder/ResumeEditor";
 import ResumeAnalyzer from "./pages/ResumeBuilder/ResumeAnalyzer";
 import InterviewExperiences from "./pages/InterviewExperiences/InterviewExperiences";
+import TermsandConditions from "./pages/Terms/TermsandConditions";
 import ProjectIdeas from "./pages/ProjectIdeas/ProjectIdeas";
 import RepositoryHive from "./pages/OpenSource/RepositoryHive";
 import OSSBlog from "./pages/OpenSource/OSSBlog";
@@ -311,6 +312,16 @@ const App = () => {
                           <Settings />
                         </PageTransition>
                       </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/terms-and-conditions"
+                    element={
+                      <ErrorBoundary>
+                        <PageTransition>
+                          <TermsandConditions />
+                        </PageTransition>
+                      </ErrorBoundary>
                     }
                   />
                 </Route>
