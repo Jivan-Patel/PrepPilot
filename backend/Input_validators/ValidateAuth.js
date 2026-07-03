@@ -1,4 +1,5 @@
 const { z } = require("zod");
+const { refreshToken } = require("../controllers/authController");
 
 const registerUserZod = z.object({
   name: z.string().min(4, "Length of the name should be minimum 4").trim(),
@@ -49,7 +50,55 @@ const validateUserLogin = (req, res, next) => {
   }
 };
 
+const refreshTokenZod = z.object({
+  refreshToken : z.string("Must be an string")
+})
+
+const validateRefreshToken = (req, res, next) => {
+  try {
+    refreshToken.parse(req.body);
+    next();
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      message: "Validation failed",
+      errors: err.errors.map(e => ({
+        field: e.path.join("."),
+        message: e.message,
+      })),
+    });
+  }
+};
+
+const resendVerificationZod = z.object({
+  email : z.string().email()
+})
+
+const validateResendEmail = (req,res,next)=>{
+
+  try{
+
+    resendVerificationZod.parse(req.body);
+    next();
+
+  }
+  catch(err){
+
+    return res.status(400).json({
+      success: false,
+      message: "Validation failed",
+      errors: err.errors.map(e => ({
+        field: e.path.join("."),
+        message: e.message,
+      })),
+    });
+
+  }
+}
+
 module.exports = {
     validateUserLogin,
-    validateUserSignup
+    validateUserSignup,
+    validateRefreshToken,
+    validateResendEmail
 }

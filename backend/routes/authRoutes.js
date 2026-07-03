@@ -2,7 +2,7 @@ const express = require("express");
 const { registerUser, loginUser, verifyEmail, resendVerificationEmail, getUserProfile, updateUserProfile, changePassword, deleteUserAccount, refreshToken, logoutUser } = require("../controllers/authController");
 const { protect } = require("../middlewares/authMiddleware");
 const { upload } = require("../middlewares/uploadMiddleware");
-const { validateUserLogin, validateUserSignup } = require("../Input_validators/ValidateAuth");
+const { validateUserLogin, validateUserSignup, validateRefreshToken, validateResendEmail } = require("../Input_validators/ValidateAuth");
 const router = express.Router();
 
 const {
@@ -15,13 +15,13 @@ const {
 // Auth Routes
 router.post("/register", authLimiter, validateUserSignup, registerUser);
 router.post("/login", authLimiter, validateUserLogin, loginUser);
-router.post("/refresh", authLimiter, refreshToken);
-router.post("/logout", authLimiter, logoutUser);
+router.post("/refresh", authLimiter,validateRefreshToken, refreshToken);
+router.post("/logout", authLimiter, validateRefreshToken, logoutUser);
 router.get("/profile", protect, generalLimiter, getUserProfile);
 router.put("/profile", protect, generalLimiter, updateUserProfile);
 router.put("/change-password", protect, sensitiveAuthLimiter, changePassword);
 router.delete("/delete-account", protect, sensitiveAuthLimiter, deleteUserAccount);
-router.post("/resend-verification", authLimiter, resendVerificationEmail);
+router.post("/resend-verification", authLimiter,  validateResendEmail, resendVerificationEmail);
 router.get("/verify-email", verifyEmail);
 
 /**
