@@ -104,20 +104,26 @@ const achievementRoutes = require("./routes/achievementRoutes");
 app.use("/api/user", generalLimiter, achievementRoutes);
 const booksRoutes = require("./routes/booksRoutes");
 const { required } = require("joi");
+const { validateGenerateInterviewQuestions, validateGenerateConceptExplanation, validateGenerateInterviewTips } = require("./Input_validators/ValidateAi.js");
 app.use("/api/resume", generalLimiter, resumeRoutes);
+
+// AI routes with Zod validation
 app.use(
   "/api/ai/generate-questions",
   sensitiveRouteHeaders,
   aiLimiter,
   protect,
-  generateInterviewQuestions,
+  validateGenerateInterviewQuestions, // Zod validator
+  generateInterviewQuestions          // Controller
 );
+
 app.use(
   "/api/ai/generate-explanation",
   sensitiveRouteHeaders,
   aiLimiter,
   protect,
-  generateConceptExplanation,
+  validateGenerateConceptExplanation, // Zod validator
+  generateConceptExplanation          // Controller
 );
 
 app.use(
@@ -125,8 +131,10 @@ app.use(
   sensitiveRouteHeaders,
   aiLimiter,
   protect,
-  generateInterviewTips,
+  validateGenerateInterviewTips,      // Zod validator
+  generateInterviewTips               // Controller
 );
+
 
 app.use("/api/books", generalLimiter, booksRoutes);
 
