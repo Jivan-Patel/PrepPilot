@@ -43,7 +43,7 @@ const allowedOrigins = new Set(originEnvList);
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   const renderPattern =
-    /^https:\/\/(?:interview-prep(?:aration)?-ai|preppilot-backend)-[a-z0-9-]+\.onrender\.com$/;
+    /^https:\/\/(?:interview-prep(?:aration)?-ai|preppilot(?:-backend)?)-[a-z0-9-]+\.onrender\.com$/;
   const localhostPattern =
     /^http:\/\/(localhost|127\.0\.0\.1):(5\d{3}|3\d{3})$/;
   if (
