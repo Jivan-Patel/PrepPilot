@@ -1,5 +1,5 @@
 import ProfileInfoCard from "./components/Cards/ProfileinfoCard";
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { APP_FEATURES, STATS, HOW_IT_WORKS_STEPS } from "./utils/data";
 import { useNavigate, Link } from "react-router-dom";
 import {
@@ -15,7 +15,7 @@ import Login from "./pages/Auth/Login";
 import SignUp from "./pages/Auth/SignUp";
 import ForgotPassword from "./pages/Auth/ForgotPAssword";
 import { UserContext } from "./context/userContext";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import ServicesMarquee from "./components/ServicesMarquee";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react"; // Import icons for testimonials
 import TermsandConditions from "./pages/Terms/TermsandConditions";   // ← Add this
@@ -317,9 +317,8 @@ const LandingPage = () => {
           PAGE WRAPPER – dark bg + dot grid
       ══════════════════════════════════════ */}
       <div className="w-full min-h-screen bg-gray-950 dark:bg-gray-950 text-white relative overflow-hidden selection:bg-violet-700/40">
-        {/* Ambient glow blobs */}
+        {/* Ambient glow blob – top only */}
         <div className="pointer-events-none absolute top-[-200px] left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-violet-600/15 rounded-full blur-[120px]" />
-        <div className="pointer-events-none absolute top-[40%] right-[-150px] w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px]" />
 
         {/* ─────────────────────────────────
             NAVBAR – floating pill glassmorphism (opensox.ai style)
@@ -416,7 +415,7 @@ const LandingPage = () => {
         {/* ─────────────────────────────────
             HERO – centered, full width
         ───────────────────────────────── */}
-        <section className="dot-grid-bg relative pt-24 pb-20 px-4 text-center">
+        <section className="dot-grid-bg relative pt-24 pb-6 px-4 text-center">
           <FadeIn>
             {/* Badge pill */}
             <div className="inline-flex items-center gap-2 mb-6 text-xs font-semibold text-violet-300 bg-violet-500/10 border border-violet-500/25 px-4 py-1.5 rounded-full">
@@ -436,7 +435,7 @@ const LandingPage = () => {
           </FadeIn>
 
           <FadeIn delay={0.15}>
-            <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+            <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto mb-8 leading-relaxed">
               Get role-specific questions, expand answers when you need them,
               dive deeper into concepts, and organize everything your way. From
               preparation to mastery—your ultimate interview toolkit is here.
@@ -460,34 +459,35 @@ const LandingPage = () => {
                 Try AI Assistance
               </button>
             </div>
-            <p className="mt-4 text-xs text-gray-500">
+            <p className="mt-3 text-xs text-gray-500">
               No signup required for AI Assistance ✦ Free to explore
             </p>
           </FadeIn>
-        </section>
 
-        {/* ─────────────────────────────────
-            STATS STRIP
-        ───────────────────────────────── */}
-        <section className="relative border-y border-white/6 py-14 px-4">
-          <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-            {STATS.map((stat, i) => (
-              <FadeIn key={stat.id} delay={i * 0.07} className="text-center">
-                <div className="stat-number text-4xl sm:text-5xl font-extrabold mb-1 tracking-tight">
-                  {stat.value}
+          {/* ── Stats inline ── */}
+          <FadeIn delay={0.3}>
+            <div className="mt-10 max-w-3xl mx-auto grid grid-cols-2 md:grid-cols-4">
+              {STATS.map((stat, i) => (
+                <div
+                  key={stat.id}
+                  className={`text-center px-4 py-2 ${i < STATS.length - 1 ? "md:border-r border-white/8" : ""} ${i === 1 ? "border-r border-white/8 md:border-r-0" : ""}`}
+                >
+                  <div className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-0.5">
+                    {stat.value}
+                  </div>
+                  <div className="text-[11px] text-gray-500 font-medium tracking-wide uppercase">
+                    {stat.label}
+                  </div>
                 </div>
-                <div className="text-sm text-gray-400 font-medium">
-                  {stat.label}
-                </div>
-              </FadeIn>
-            ))}
-          </div>
+              ))}
+            </div>
+          </FadeIn>
         </section>
 
         {/* ─────────────────────────────────
             MARQUEE / SERVICES STRIP
         ───────────────────────────────── */}
-        <div className="border-b border-white/6 py-4">
+        <div className="pb-4">
           <ServicesMarquee />
         </div>
 
@@ -621,7 +621,6 @@ const LandingPage = () => {
         <section className="py-24 px-4 border-t border-white/6 relative overflow-hidden">
           {/* Ambient background elements */}
           <div className="pointer-events-none absolute top-10 right-0 w-96 h-96 bg-violet-500/10 rounded-full blur-[120px]" />
-          <div className="pointer-events-none absolute bottom-0 left-1/4 w-80 h-80 bg-blue-500/8 rounded-full blur-[100px]" />
 
           <div className="max-w-6xl mx-auto relative z-10">
             <FadeIn className="text-center mb-16">
@@ -824,9 +823,112 @@ const LandingPage = () => {
 </div>
 
         {/* ─────────────────────────────────
+            READY TO ACE – CTA banner
+        ───────────────────────────────── */}
+        <section className="relative py-28 px-4 overflow-hidden border-t border-white/6" style={{ background: "linear-gradient(to bottom, #030712 0%, #0B0F19 100%)" }}>
+          {/* Smooth top fade from page background */}
+          <div className="pointer-events-none absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-gray-950 to-transparent" />
+          {/* Background glow blobs */}
+          <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[360px] bg-violet-600/20 rounded-full blur-[120px]" />
+          <div className="pointer-events-none absolute bottom-0 right-1/4 w-64 h-64 bg-blue-600/15 rounded-full blur-[90px]" />
+          {/* Smooth bottom fade into footer */}
+          <div className="pointer-events-none absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-[#0B0F19] to-transparent" />
+
+          <div className="relative z-10 max-w-3xl mx-auto text-center">
+            <FadeIn>
+              <span className="inline-block text-xs font-semibold tracking-widest text-violet-400 uppercase mb-4">
+                Your next offer is one prep away
+              </span>
+            </FadeIn>
+
+            <FadeIn delay={0.08}>
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-[1.1] tracking-tight mb-6">
+                Ready to{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-purple-400 to-blue-400">
+                  Ace Your Interview?
+                </span>
+              </h2>
+            </FadeIn>
+
+            <FadeIn delay={0.15}>
+              <p className="text-base sm:text-lg text-gray-400 max-w-xl mx-auto mb-10 leading-relaxed">
+                Join thousands of developers who use PrepPilot to land roles at
+                top companies. Start practicing today — no credit card required.
+              </p>
+            </FadeIn>
+
+            <FadeIn delay={0.22}>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <motion.button
+                  onClick={handleCTA}
+                  whileHover={{ scale: 1.05, y: -3 }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                  className="cta-glow relative flex items-center gap-2 text-white font-semibold px-9 py-4 rounded-full text-base overflow-hidden"
+                  style={{
+                    backgroundImage: "linear-gradient(135deg, #7c3aed, #4f46e5, #7c3aed)",
+                    backgroundSize: "200% 200%",
+                    boxShadow: "0 0 24px rgba(124,58,237,0.45)",
+                  }}
+                >
+                  <motion.span
+                    className="absolute inset-0"
+                    style={{
+                      backgroundImage: "linear-gradient(135deg, #8b5cf6, #6366f1, #8b5cf6)",
+                      backgroundSize: "200% 200%",
+                    }}
+                    animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                  />
+                  <span className="relative z-10 font-mono text-xs text-violet-200">&gt;_</span>
+                  <span className="relative z-10">Get Started — It's Free</span>
+                  <motion.span
+                    className="relative z-10 inline-flex"
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <LuArrowRight />
+                  </motion.span>
+                </motion.button>
+
+                <motion.button
+                  onClick={() => navigate("/ai-helper")}
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="flex items-center gap-2 text-violet-300 font-semibold px-9 py-4 rounded-full text-base backdrop-blur-md bg-white/[0.04]"
+                  style={{ border: "1px solid rgba(139,92,246,0.35)" }}
+                >
+                  <LuSparkles className="text-sm" />
+                  Try AI Assistance
+                </motion.button>
+              </div>
+
+              <p className="mt-5 text-xs text-gray-500">
+                No signup required for AI Assistance ✦ Free to explore
+              </p>
+            </FadeIn>
+
+            {/* Trust strip */}
+            <FadeIn delay={0.3}>
+              <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
+                <div className="flex items-center gap-1.5">
+                  {[1,2,3,4,5].map((n) => (
+                    <Star key={n} size={14} className="fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+                <span className="hidden sm:block w-px h-4 bg-white/10" />
+                <span className="text-sm text-gray-400">Trusted by 10,000+ developers</span>
+                <span className="hidden sm:block w-px h-4 bg-white/10" />
+                <span className="text-sm text-gray-400">Built for FAANG &amp; startup interviews</span>
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* ─────────────────────────────────
             FOOTER
         ───────────────────────────────── */}
-        <footer className="w-full border-t border-white/5 bg-[#0B0F19] text-gray-400 font-sans mt-20">
+        <footer className="w-full bg-[#0B0F19] text-gray-400 font-sans">
   <div className="max-w-7xl mx-auto px-6 pt-16 pb-8 sm:px-8 lg:px-12">
     
     {/* Main Multi-Column Grid */}
@@ -896,66 +998,21 @@ const LandingPage = () => {
   </div>{/* end max-w-7xl */}
 </footer>
       </div>{/* end page wrapper */}
-      {/* Premium Back To Top Button */}
+      {/* Back To Top Button */}
       <AnimatePresence>
         {showScrollTop && (
           <motion.button
             onClick={scrollToTop}
-            initial={{
-              opacity: 0,
-              scale: 0.7,
-              y: 40,
-            }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              y: 0,
-            }}
-            exit={{
-              opacity: 0,
-              scale: 0.7,
-              y: 40,
-            }}
-            whileHover={{
-              scale: 1.08,
-              y: -4,
-            }}
-            whileTap={{
-              scale: 0.95,
-            }}
-            transition={{
-              duration: 0.25,
-            }}
-            className="fixed bottom-6 right-6 z-[9999]"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-6 right-6 z-[9999] w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-white border border-white/10 bg-white/5 backdrop-blur-md transition-colors duration-200"
             aria-label="Back To Top"
           >
-            {/* Glow */}
-            <div className="absolute inset-0 bg-violet-600 rounded-full blur-xl opacity-40" />
-
-            {/* Button */}
-            <div
-              className="
-          relative
-          w-10
-          h-10
-          rounded-xl
-          flex
-          items-center
-          justify-center
-          text-white
-          border
-          border-white/10
-          backdrop-blur-xl
-        "
-              style={{
-                background:
-                  "linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)",
-                boxShadow:
-                  "0 15px 35px rgba(124,58,237,0.45), 0 0 20px rgba(124,58,237,0.35)",
-              }}
-            >
-              <LuArrowUp className="text-xl" />
-            </div>
+            <LuArrowUp className="text-base" />
           </motion.button>
         )}
       </AnimatePresence>
